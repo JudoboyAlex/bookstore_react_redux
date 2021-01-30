@@ -10,6 +10,7 @@ const ListBook = (props) => {
   const [updatedBookCategory, setUpdatedBookCategory] = useState("");
   const [updatedBookDescription, setUpdatedBookDescription] = useState("");
   const [updatedBookId, setUpdatedBookId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { className } = props;
   
   const dispatch = useDispatch();
@@ -42,7 +43,26 @@ const ListBook = (props) => {
     setUpdatedBookDescription(target.value);
   };
 
-  const handleSubmitUpdateBook = () => {
+  const validate = () => {
+    let regex = /^\d+(\.\d{0,2})?$/g;
+    if (!regex.test(updatedBookPrice)) {
+      setErrorMessage("Book price must be number")
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  const handleSubmitUpdateBook = (event) => {
+    event.preventDefault();
+    const isValid = validate();
+
+    if (!isValid){
+      return false;
+    } else {
+      setErrorMessage("");
+    }
+
     dispatch(updateBook(
       updatedBookId,
       updatedBookName,
@@ -60,7 +80,6 @@ const ListBook = (props) => {
   return (
     <>
       <h3>List of Books</h3>
-  
       <div className="bookListContainer">
         {books && books.length > 0 &&
           books.map((book, index) => (
@@ -90,6 +109,7 @@ const ListBook = (props) => {
                 value={updatedBookPrice}
                 onChange={handleUpdatedBookPrice}
               />
+              <div style={{ fontSize: 12, color: "red" }}>{errorMessage}</div>
               <input
                 type="text"
                 value={updatedBookCategory}

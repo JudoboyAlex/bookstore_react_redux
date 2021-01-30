@@ -11,6 +11,7 @@ const AddBook = (props) => {
   const [bookName, setBookName] = useState("");
   const [bookCategory, setBookCategory] = useState("");
   const [bookDescription, setBookDescription] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggle = () => setModal(!modal);
 
@@ -30,7 +31,26 @@ const AddBook = (props) => {
     setBookDescription(target.value);
   };
 
-  const handleSubmitAddBook = () => {
+  const validate = () => {
+    let regex = /^\d+(\.\d{0,2})?$/g;
+    if (!regex.test(bookPrice)) {
+      setErrorMessage("Book price must be number")
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  const handleSubmitAddBook = (event) => {
+    event.preventDefault();
+    const isValid = validate();
+
+    if (!isValid){
+      return false;
+    } else {
+      setErrorMessage("");
+    }
+
     dispatch(addBook(bookName, bookPrice, bookCategory, bookDescription));
     setBookPrice("");
     setBookName("");
@@ -38,7 +58,7 @@ const AddBook = (props) => {
     setBookDescription("");
     setModal(!modal)
   };
-  
+
   return (
     <div className="header">
       <h1>Welcome to Book Store!</h1>
@@ -58,10 +78,11 @@ const AddBook = (props) => {
               />
               <input
                 type="text"
-                placeholder="Price"
+                placeholder="Book Price(Must be numer)"
                 value={bookPrice}
                 onChange={handleBookPrice}
               />
+              <div style={{ fontSize: 12, color: "red" }}>{errorMessage}</div>
               <input
                 type="text"
                 placeholder="Category"
